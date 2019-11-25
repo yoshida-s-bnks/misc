@@ -1,4 +1,3 @@
-#require './test.rb'
 require 'mechanize'
 
 agent = Mechanize.new
