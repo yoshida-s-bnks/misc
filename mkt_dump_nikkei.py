@@ -29,7 +29,7 @@ for ul_tag in uls:
     for li_tag in ul_tag.find_all('li', class_='k-hub-market__index'):
         csv_list = []
         csv_list.append(li_tag.find('span').previousSibling)
-        data_ts = str(proc_ts.year) +'-'+ li_tag.find('a').get('title').strip(' ''大引’’終値').replace('月','-').replace('日','')
+        data_ts = str(proc_ts.year) +'-'+ li_tag.find('a').get('title').strip(' ''前引''大引’’終値').replace('月','-').replace('日','')
         csv_list.append(data_ts)
         csv_list.append(li_tag.find('span', class_='k-hub-market__current-price').text.replace(',',''))
         csv_list.append(url)
