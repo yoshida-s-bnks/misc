@@ -23,7 +23,7 @@ except:
     logger = False
 ##########
 
-url = "https://bitflyer.com/ja-jp/"
+url = "https://markets.businessinsider.com/currencies/btc-usd"
 proc_ts = datetime.datetime.now()
 
 options = Options()
@@ -34,17 +34,12 @@ driver.get(url)
 html = driver.page_source.encode('utf-8')
 
 soup = BeautifulSoup(html, "html.parser")
-div_ = soup.find('div', class_='bf-bcprice')
-
-b_ask = float(div_.find('span', class_='js-lastask').text.replace(',',''))
-b_bid = float(div_.find('span', class_='js-lastbid').text.replace(',',''))
-
-b_mid = (b_ask + b_bid) / 2
+span = soup.find('span', class_='aktien-big-font').find('span', class_='push-data')
 
 csv_list = []
-csv_list.append('BTC-JPY')
+csv_list.append('BTC-USD')
 csv_list.append(str(proc_ts))
-csv_list.append(b_mid)
+csv_list.append(span.text.replace(',',''))
 csv_list.append(url)
 csv_list.append(str(proc_ts))
 
