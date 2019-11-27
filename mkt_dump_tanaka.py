@@ -5,11 +5,8 @@ import sys
 import csv
 import os
 
-url = "http://gold.tanaka.co.jp/index.php"
-proc_ts = datetime.datetime.now()
-
-html = urllib.request.urlopen(url)
-
+# open logger if passed in as the first argument
+# if it fails to open, or not provided, logger flag is set to false
 try:
     f = open(sys.argv[1],'a')
     print ("##logfile: " + sys.argv[1])
@@ -21,6 +18,12 @@ except IndexError:
 except:
     print ("**logfile: failed to open " + sys.argv[1])
     logger = False
+##########
+
+url = "http://gold.tanaka.co.jp/index.php"
+proc_ts = datetime.datetime.now()
+
+html = urllib.request.urlopen(url)
 
 soup = BeautifulSoup(html, "html.parser")
 div_ = soup.find('div', id='soba_info')
