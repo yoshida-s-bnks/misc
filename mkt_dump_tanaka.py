@@ -1,29 +1,42 @@
 import urllib.request, urllib.error
 from bs4 import BeautifulSoup
-from datetime import datetime
+import datetime
+import sys
 import csv
 import os
 
 url = "http://gold.tanaka.co.jp/index.php"
+proc_ts = datetime.datetime.now()
 
 html = urllib.request.urlopen(url)
 
-#f = open('~/data/mkt/mkt-data-storage.csv','a')
-f = open(os.environ['DATA_PATH']+'/mkt/mkt-data-dump.csv','a')
-writer = csv.writer(f)
+try:
+    f = open(sys.argv[1],'a')
+    print ("##logfile: " + sys.argv[1])
+    writer = csv.writer(f)
+    logger = True
+except IndexError:
+    print ("**logfile: no file name provided, skipping logfile.")
+    logger = False
+except:
+    print ("**logfile: failed to open " + sys.argv[1])
+    logger = False
 
 soup = BeautifulSoup(html, "html.parser")
 div_ = soup.find('div', id='soba_info')
-t_stamp = div_.find('p', id='release_time').text.strip('公表')
+data_ts = div_.find('p', id='release_time').text.strip('公表').replace('/','-')
 
 for li_tag in div_.find_all('li'):
     csv_list = []
     csv_list.append(li_tag.find('span').previousSibling)
-    csv_list.append(t_stamp)
+    csv_list.append(data_ts)
     csv_list.append(li_tag.find('br').previousSibling.strip('円').replace(',',''))
-#        csv_list.append(span_tag.text)
+    csv_list.append(url)
+    csv_list.append(str(proc_ts))
 
     print(csv_list)
-    writer.writerow(csv_list)
+    if logger:
+        writer.writerow(csv_list)
 
-f.close
+if logger:
+    f.close
