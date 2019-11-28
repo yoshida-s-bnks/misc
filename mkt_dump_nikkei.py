@@ -1,24 +1,27 @@
 import urllib.request, urllib.error
 from bs4 import BeautifulSoup
 import datetime
-import sys
+import optparse
 import csv
-import os
 
-# open logger if passed in as the first argument
-# if it fails to open, or not provided, logger flag is set to false
+########################################
+# open output file if passed in from argument
+# if it fails to open, or not provided, f_open flag is set to false
+parser = optparse.OptionParser()
+
+parser.add_option('-o', '--output', dest="output_filename", default="")
+
+options, remainder = parser.parse_args()
+
 try:
-    f = open(sys.argv[1],'a')
-    print ("##logfile: " + sys.argv[1])
+    f = open(options.output_filename, 'a+')
+    print ("##output file: " + options.output_filename)
     writer = csv.writer(f)
-    logger = True
-except IndexError:
-    print ("**logfile: no file name provided, skipping logfile.")
-    logger = False
+    f_open = True
 except:
-    print ("**logfile: failed to open " + sys.argv[1])
-    logger = False
-##########
+    print ("**output file: failed to open " + options.output_filename)
+    f_open = False
+########################################
 
 url = "http://www.nikkei.com"
 proc_ts = datetime.datetime.now()
@@ -39,8 +42,8 @@ for ul_tag in uls:
         csv_list.append(str(proc_ts))
 
         print(csv_list)
-        if logger:
+        if f_open:
             writer.writerow(csv_list)
 
-if logger:
+if f_open:
     f.close

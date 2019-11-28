@@ -1,6 +1,4 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-import chromedriver_binary
+import urllib.request, urllib.error
 from bs4 import BeautifulSoup
 import datetime
 import optparse
@@ -25,27 +23,34 @@ except:
     f_open = False
 ########################################
 
-url = "https://markets.businessinsider.com/currencies/btc-usd"
+url = "https://jp.reuters.com/investing"
 proc_ts = datetime.datetime.now()
 
-options = Options()
-options.headless = True
-driver = webdriver.Chrome(options=options)
-driver.get(url)
-
-html = driver.page_source.encode('utf-8')
+html = urllib.request.urlopen(url)
 
 soup = BeautifulSoup(html, "html.parser")
-span = soup.find('span', class_='aktien-big-font').find('span', class_='push-data')
 
-csv_list = []
-csv_list.append('BTC-USD')
-csv_list.append(str(proc_ts))
-csv_list.append(span.text.replace(',',''))
-csv_list.append(url)
-csv_list.append(str(proc_ts))
+tbls = soup.find_all('table', class_='dataTable')
 
-print (csv_list)
+mkt_hash = {}
+
+for tbl in tbls:
+    for tr in tbl.find_all('tr'):
+        td = tr.find_all('td')
+        if len(td) > 2:
+            mkt_hash[td[0].text.strip()] = td[1].text.strip().replace(',','')
+
+for mkt_data in mkt_hash:
+    csv_list = []
+    csv_list.append(mkt_data)
+    csv_list.append(str(proc_ts))
+    csv_list.append(mkt_hash[mkt_data])
+    csv_list.append(url)
+    csv_list.append(str(proc_ts))
+
+    print(csv_list)
+    if f_open:
+        writer.writerow(csv_list)
+
 if f_open:
-    writer.writerow(csv_list)
     f.close
