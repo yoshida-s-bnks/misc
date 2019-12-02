@@ -5,8 +5,12 @@ from bs4 import BeautifulSoup
 import datetime
 import optparse
 import csv
+import os, time
 
-def __get_html(url, verbose):
+def __get_interval():
+    return datetime.timedelta(hours=3.6)
+
+def __get_html(url, verbose=False):
     options = Options()
     options.headless = True
     driver = webdriver.Chrome(options=options)
@@ -20,7 +24,7 @@ def __get_html(url, verbose):
 
     return soup
 
-def scr_nikkei(lines, verbose):
+def scr_nikkei(lines=[], verbose=False):
     url = "http://www.nikkei.com"
 
     soup = __get_html(url,verbose)
@@ -45,7 +49,7 @@ def scr_nikkei(lines, verbose):
     lines.extend(l)
     return lines
 
-def scr_tanaka(lines, verbose):
+def scr_tanaka(lines=[], verbose=False):
     url = "http://gold.tanaka.co.jp/index.php"
 
     soup = __get_html(url,verbose)
@@ -68,7 +72,7 @@ def scr_tanaka(lines, verbose):
     lines.extend(l)
     return lines
 
-def scr_reuters(lines, verbose):
+def scr_reuters(lines=[], verbose=False):
     url = "https://jp.reuters.com/investing"
 
     soup = __get_html(url, verbose)
@@ -99,7 +103,7 @@ def scr_reuters(lines, verbose):
     lines.extend(l)
     return lines
 
-def scr_bitflyer(lines, verbose):
+def scr_bitflyer(lines=[], verbose=False):
     url = "https://bitflyer.com/ja-jp/"
 
     soup = __get_html(url, verbose)
@@ -121,7 +125,7 @@ def scr_bitflyer(lines, verbose):
     lines.append(line)
     return lines
 
-def scr_bus_insider_btc(lines, verbose):
+def scr_bus_insider_btc(lines=[], verbose=False):
     url = "https://markets.businessinsider.com/currencies/btc-usd"
 
     soup = __get_html(url, verbose)
@@ -146,20 +150,44 @@ if __name__ == '__main__':
     parser = optparse.OptionParser()
 
     parser.add_option('-o', '--output', dest="output_filename", default="")
-    parser.add_option('-v', '--verbose',action="store_true")
+    parser.add_option('-v', '--verbose', action="store_true")
+    parser.add_option('-f', '--force', action="store_true")
 
     options, remainder = parser.parse_args()
 
-    try:
-        f = open(options.output_filename, 'a+')
-        if options.verbose:
-            print ("##output file: " + options.output_filename)
-        writer = csv.writer(f)
+    if options.force:
         f_open = True
-    except:
-        if options.verbose:
-            print ("**output file: failed to open " + options.output_filename)
+    else:
         f_open = False
+        try:
+            mod_t = time.localtime(os.path.getmtime(options.output_filename))
+            mod_ts = datetime.datetime(*mod_t[:6])
+            proc_ts = datetime.datetime.now()
+            print ("##output file: last modified %s" % time.strftime('%Y-%m-%d %H:%M:%S', mod_t))
+
+            if mod_ts < proc_ts - __get_interval():
+                f_open = True
+                if options.verbose:
+                    print("##outpuf file: %.1f hours passed since last modified. appending result." % (__get_interval().seconds / 3600))
+            else:
+                if options.verbose:
+                    print("**outpuf file: %.1f hours hasn't passed. skip appending." % (__get_interval().seconds / 3600))
+        except:
+            f_open = True
+            if options.verbose:
+                print ("**output file: new file? failed to obtain last modified time.")
+
+    if f_open:
+        try:
+            f = open(options.output_filename, 'a+')
+            if options.verbose:
+                print ("##output file: " + options.output_filename)
+            writer = csv.writer(f)
+            f_open = True
+        except:
+            if options.verbose:
+                print ("**output file: failed to open " + options.output_filename)
+            f_open = False
     ########################################
 
     lines = []
