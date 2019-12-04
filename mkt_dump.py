@@ -19,8 +19,9 @@ def __get_html(url, verbose=False):
     driver.get(url)
 
     html = driver.page_source.encode('utf-8')
-
     soup = BeautifulSoup(html, "html.parser")
+
+    driver.quit()
 
     return soup
 
