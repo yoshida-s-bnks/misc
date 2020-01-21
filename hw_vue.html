@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang=jp dir="ltr">
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma/css/bulma.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <meta charset="utf-8">
+    <title>First VUE</title>
+  </head>
+  <body>
+    <div id="app">
+      <h1 class="title">{{ title }}</h1>
+      <p class="subtitle">{{ subtitle}}</p>
+      <div class="container">
+        <input class="is-size-6" v-model="value" placeholder="say what?"></input>
+        x
+        <button class="is-size-6" v-on:click="increase(1,$event)">{{counter}}</button>
+        <button class="is-size-6" v-on:click="halve($event)">half it</button>
+        <ul>
+          <li v-for="i in counter">{{ i +". " + value }}</p>
+        </ul>
+      </div>
+    </div>
+    <div class="container">
+    </div>
+    <script src="hw_vue.js"></script>
+  </body>
+</html>
