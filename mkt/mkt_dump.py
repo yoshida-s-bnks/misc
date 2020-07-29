@@ -110,12 +110,12 @@ def scr_bitflyer(lines=[], verbose=False):
     soup = __get_html(url, verbose)
     proc_ts = datetime.datetime.now()
 
-    div_ = soup.find('div', class_='bf-bcprice')
+    div_ = soup.find('div', class_='bf-bitcoin-price-chart__body')
 
-    b_ask = float(div_.find('span', class_='js-lastask').text.replace(',',''))
-    b_bid = float(div_.find('span', class_='js-lastbid').text.replace(',',''))
+#    b_ask = float(div_.find('span', class_='js-lastask').text.replace(',',''))
+#    b_bid = float(div_.find('span', class_='js-lastbid').text.replace(',',''))
 
-    b_mid = (b_ask + b_bid) / 2
+    b_mid = float(div_.find('span', class_='js-pricemid').text.replace(',',''))
 
     line = []
     line.append('BTC-JPY')
@@ -196,7 +196,7 @@ if __name__ == '__main__':
     lines = scr_tanaka(lines, options.verbose)
     lines = scr_reuters(lines, options.verbose)
     lines = scr_bitflyer(lines, options.verbose)
-    lines = scr_bus_insider_btc(lines, options.verbose)
+    # lines = scr_bus_insider_btc(lines, options.verbose)
 
     for line in lines:
         if f_open:
