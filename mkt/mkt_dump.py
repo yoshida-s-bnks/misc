@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import chromedriver_binary
+import socket
 from bs4 import BeautifulSoup
 import datetime
 import optparse
@@ -21,7 +22,16 @@ def __get_html(url, verbose=False):
     html = driver.page_source.encode('utf-8')
     soup = BeautifulSoup(html, "html.parser")
 
-    driver.quit()
+    if verbose:
+        print("##closing driver")
+    socket.setdefaulttimeout(5)
+    try:
+       driver.quit()
+    except:
+       None
+    finally:
+       # Set to something higher you want
+       socket.setdefaulttimeout(60)
 
     return soup
 
@@ -194,8 +204,8 @@ if __name__ == '__main__':
     lines = []
     lines = scr_nikkei(lines, options.verbose)
     lines = scr_tanaka(lines, options.verbose)
-    lines = scr_reuters(lines, options.verbose)
     lines = scr_bitflyer(lines, options.verbose)
+    lines = scr_reuters(lines, options.verbose)
     # lines = scr_bus_insider_btc(lines, options.verbose)
 
     for line in lines:
