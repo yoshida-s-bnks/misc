@@ -66,22 +66,29 @@ def scr_tanaka(lines=[], verbose=False):
     soup = __get_html(url,verbose)
     proc_ts = datetime.datetime.now()
 
-    div_ = soup.find('div', id='soba_info')
-    data_ts = div_.find('p', id='release_time').text.strip('公表').replace('/','-')
+    div_ = soup.find('div', class_='soba_info')
+    data_ts = div_.find('p', class_='release_time').text.strip('公表').replace('/','-')
 
+
+    metal = ['金','プラチナ','銀']
     l = []
-    for li_tag in div_.find_all('li'):
-        line = []
-        line.append(li_tag.find('span').previousSibling)
-        line.append(data_ts)
-        line.append(li_tag.find('br').previousSibling.strip('円').replace(',',''))
-        line.append(url)
-        line.append(str(proc_ts))
-        l.append(line)
+    for item in div_.find_all('td', class_='price_sell'):
+        p = item.find('span', class_='price_num')
+        if(p != None):
+            # print(p.text.replace(',',''))
+            line = []
+            line.append(metal.pop(0))
+            line.append(data_ts)
+            line.append(p.text.replace(',',''))
+            line.append(url)
+            line.append(str(proc_ts))
+            l.append(line)
+
     if verbose:
         print('##%d record(s) found.' % len(l))
     lines.extend(l)
     return lines
+
 
 def scr_reuters(lines=[], verbose=False):
     url = "https://jp.reuters.com/investing"
