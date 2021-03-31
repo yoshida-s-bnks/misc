@@ -29,20 +29,23 @@ proc_ts = datetime.datetime.now()
 html = urllib.request.urlopen(url)
 
 soup = BeautifulSoup(html, "html.parser")
-div_ = soup.find('div', id='soba_info')
-data_ts = div_.find('p', id='release_time').text.strip('公表').replace('/','-')
+# print(soup)
+div_ = soup.find('div', class_='soba_info')
+# print(div_)
+data_ts = div_.find('p', class_='release_time').text.strip('公表').replace('/','-')
+print(data_ts)
+metal = ['金','プラチナ','銀']
+for item in div_.find_all('td', class_='price_sell'):
+    p = item.find('span', class_='price_num')
+    if(p != None):
+        print(p.text.replace(',',''))
+        csv_list = []
+        csv_list.append(metal.pop(0))
+        csv_list.append(data_ts)
+        csv_list.append(p.text.replace(',',''))
+        csv_list.append(url)
+        csv_list.append(str(proc_ts))
 
-for li_tag in div_.find_all('li'):
-    csv_list = []
-    csv_list.append(li_tag.find('span').previousSibling)
-    csv_list.append(data_ts)
-    csv_list.append(li_tag.find('br').previousSibling.strip('円').replace(',',''))
-    csv_list.append(url)
-    csv_list.append(str(proc_ts))
-
-    print(csv_list)
-    if f_open:
-        writer.writerow(csv_list)
-
-if f_open:
-    f.close
+        print(csv_list)
+        if f_open:
+            writer.writerow(csv_list)
