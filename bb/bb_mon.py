@@ -53,5 +53,5 @@ while(el):
         el = False
 
 if(len(slots) == 0):
-    print("Nothing found")
+    print("空きなし")
 # print(slots)
