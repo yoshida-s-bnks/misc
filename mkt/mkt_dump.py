@@ -122,17 +122,13 @@ def scr_reuters(lines=[], verbose=False):
     return lines
 
 def scr_bitflyer(lines=[], verbose=False):
-    url = "https://bitflyer.com/ja-jp/"
+    url = "https://bitflyer.com/ja-jp/bitcoin-chart"
 
     soup = __get_html(url, verbose)
     proc_ts = datetime.datetime.now()
 
-    div_ = soup.find('div', class_='bf-bitcoin-price-chart__body')
-
-#    b_ask = float(div_.find('span', class_='js-lastask').text.replace(',',''))
-#    b_bid = float(div_.find('span', class_='js-lastbid').text.replace(',',''))
-
-    b_mid = float(div_.find('span', class_='js-pricemid').text.replace(',',''))
+    b_mid = soup.find('div',class_='p-currencyInfo__price').text.strip().replace(',','').split('※')[0]
+    print(b_mid)
 
     line = []
     line.append('BTC-JPY')
@@ -170,6 +166,11 @@ if __name__ == '__main__':
     parser.add_option('-o', '--output', dest="output_filename", default="")
     parser.add_option('-v', '--verbose', action="store_true")
     parser.add_option('-f', '--force', action="store_true")
+    parser.add_option('-a', '--all', action="store_true")
+    parser.add_option('-n', '--nikkei', action="store_true")
+    parser.add_option('-t', '--tanaka', action="store_true")
+    parser.add_option('-b', '--bitflyer', action="store_true")
+    parser.add_option('-r', '--reuters', action="store_true")
 
     options, remainder = parser.parse_args()
 
@@ -209,10 +210,15 @@ if __name__ == '__main__':
     ########################################
 
     lines = []
-    lines = scr_nikkei(lines, options.verbose)
-    lines = scr_tanaka(lines, options.verbose)
-    lines = scr_bitflyer(lines, options.verbose)
-    lines = scr_reuters(lines, options.verbose)
+
+    if (options.all or options.nikkei):
+        lines = scr_nikkei(lines, options.verbose)
+    if (options.all or options.tanaka):
+        lines = scr_tanaka(lines, options.verbose)
+    if (options.all or options.bitflyer):
+        lines = scr_bitflyer(lines, options.verbose)
+    if (options.all or options.reuters):
+        lines = scr_reuters(lines, options.verbose)
     # lines = scr_bus_insider_btc(lines, options.verbose)
 
     for line in lines:
