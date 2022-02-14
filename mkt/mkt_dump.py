@@ -41,17 +41,17 @@ def scr_nikkei(lines=[], verbose=False):
     soup = __get_html(url,verbose)
     proc_ts = datetime.datetime.now()
 
-    uls = soup.find_all('ul', class_='k-hub-market__content')
+    uls = soup.find_all('ul', class_='content_cpcuvnq')
 
     l = []
 
     for ul_tag in uls:
-        for li_tag in ul_tag.find_all('li', class_='k-hub-market__index'):
+        for li_tag in ul_tag.find_all('li', class_='index_i1ter3fg'):
             line = []
             line.append(li_tag.find('span').previousSibling)
             data_ts = str(proc_ts.year) +'-'+ li_tag.find('a').get('title').strip(' ''前引''大引’’終値').replace('月','-').replace('日','')
             line.append(data_ts)
-            line.append(li_tag.find('span', class_='k-hub-market__current-price').text.replace(',',''))
+            line.append(li_tag.find('span', class_='currentPrice_cssxtyg').text.replace(',',''))
             line.append(url)
             line.append(str(proc_ts))
             l.append(line)
